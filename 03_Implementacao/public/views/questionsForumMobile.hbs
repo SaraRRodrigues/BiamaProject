@@ -1,0 +1,337 @@
+<html>
+	<head>
+		<link rel='stylesheet' href='/stylesheets/styleBiama.css' />
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+		<script type="text/javascript" src="https://code.angularjs.org/1.6.9/angular-route.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+		<!-- jQuery files -->
+		<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+		<!-- Firebase -->
+		<script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
+		<!-- AngularFire -->
+		<script src="https://cdn.firebase.com/libs/angularfire/2.2.0/angularfire.min.js"></script>
+
+		<!--footer controllers-->
+		<script type="text/javascript" src="../controllers/main-controller.js"></script>
+		<script type="text/javascript" src="../controllers/biama-controller.js"></script>
+		<script type="text/javascript" src="../controllers/whereWeAre-controller.js"></script>
+		<script type="text/javascript" src="../controllers/forum-controller.js"></script>
+        <script type="text/javascript" src="../controllers/curiosityForum-controller.js"></script>
+        <script type="text/javascript" src="../controllers/questionsUsersForum-controller.js"></script>
+        <script type="text/javascript" src="../controllers/worldShareForum-controller.js"></script>
+		<script type="text/javascript" src="../controllers/library-controller.js"></script>
+		<script type="text/javascript" src="../controllers/myBiama-controller.js"></script>
+		<script type="text/javascript" src="../controllers/qrCode-controller.js"></script>
+
+		<!--details user controllers-->
+		<script type="text/javascript" src="../controllers/perfil-controller.js"></script>
+		<script type="text/javascript" src="../controllers/favorites-controller.js"></script>
+		<script type="text/javascript" src="../controllers/notifications-controller.js"></script>
+		<script type="text/javascript" src="../controllers/questions-controller.js"></script>
+		<script type="text/javascript" src="../controllers/worldShares-controller.js"></script>
+		<script type="text/javascript" src="../controllers/compare-controller.js"></script>
+		
+		<base href="/"/>
+	</head>
+	<body ng-app="myApp" ng-controller="QuestionsUsersForumController">
+		<!-- header -->
+        <div class="container-fluid">
+            <div class="header margin-top-3x">
+                <div class="margin-left-4x  col-sm-3">
+                    <img class="iconUser" ng-if="!userDetails" src="../images/user.png" alt="img" ng-click="clickUserDetails()">
+                </div>
+                <div ng-if="!showSearch" class="col-sm-7 margin-top-3x">
+                    <h2 class="subtitles marginOfQuestionsForum">Perguntas dos Utilizadores<i class="cursorPointer float-left glyphicon glyphicon-triangle-left arrows backArrow sizeOfArrowMobile"   ng-click="goToHomePage()"></i></h2>
+                </div>
+                <div ng-if="!showSearch" class="margin-top-2x col-sm-1">
+                    <img class="float-right widthOfSearchIcon" ng-if="!showSearch && !userDetails" ng-click="clickTopSearch()" src="../images/search.png">
+                    <img class="float-right" ng-if="showSearch  && !userDetails" width="90px" ng-click="clickTopSearch()" src="../images/search.png">
+                </div>
+                <div ng-if="showSearch" class="margin-top col-sm-3">
+                    <img class="float-right widthOfSearchIcon" ng-if="!showSearch && !userDetails" ng-click="clickTopSearch()" src="../images/search.png">
+					<img ng-if="showSearch  && !userDetails" ng-click="clickTopSearch()" src="../images/search.png" width="90px">
+              		<h5 class="titlesOnCenter colorOfErrorMessages errorSizeMessagesMobile" ng-if="noResultsOnSearch">Não existem resultados.</h5>
+			    </div>
+                <div class="col-sm-4 marginOfSearchInput">
+					<input id="miniSearch" class="inputMinSearch searchInputMobile sizeSearchInputMobile" ng-if="showSearch && !userDetails" type="text"></input>
+					<button ng-if="showSearch && !userDetails" ng-click="initMiniSearch()" class="buttonOkMiniSearch glyphicon glyphicon-ok buttonSizeSearchMobile"></button>
+				</div>
+            </div>
+        </div> 
+		<!-- loading spinner -->
+		<div ng-if="loading">
+			<div class="loading-icon-footer-info"></div>
+		</div>
+		<!-- section of user details -->
+		<div class="row">
+			<h5 class="titlesOnCenter textToInitSession" ng-if="goToLogin">Tem de iniciar sessão para realizar essa ação.</h5>
+				<div ng-if="insertedAnswer && clickOnInsertAnswer" class="textToInitSession questionForum alert-success center-block sucessMessageLogin titlesOnCenter">
+					Resposta enviada com sucesso.
+				</div>
+				<div ng-if="!insertedAnswer && clickOnInsertAnswer" class="textToInitSession questionForum alert-danger center-block sucessMessageLogin titlesOnCenter">
+					Erro a enviar a resposta.
+				</div>
+				<div ng-if="insertedFavoriteQuestion && clickAddFavQuestion" class="textToInitSession questionFavorite alert-success center-block sucessMessageLogin titlesOnCenter">
+					Adicionou pergunta aos seus favoritos.
+				</div>
+				<div ng-if="!insertedFavoriteQuestion && clickAddFavQuestion" class="textToInitSession questionFavorite alert-danger center-block sucessMessageLogin titlesOnCenter">
+					Erro a adicionar pergunta aos favoritos.
+				</div>
+				<div ng-if="removedFavoriteQuestion && clickRemoveFavQuestion" class="textToInitSession removeQuestionFavorite alert-success center-block sucessMessageLogin titlesOnCenter">
+					Removeu pergunta dos seus favoritos.
+				</div>
+				<div ng-if="!removedFavoriteQuestion && clickRemoveFavQuestion" class="textToInitSession removeQuestionFavorite alert-danger center-block sucessMessageLogin titlesOnCenter">
+					Erro a remover pergunta dos favoritos.
+				</div>
+				<div ng-if="insertedFavoriteAnswer && clickAddFavAnswer" class="textToInitSession answerFavorite alert-success center-block sucessMessageLogin titlesOnCenter">
+					Adicionou resposta aos seus favoritos.
+				</div>
+				<div ng-if="!insertedFavoriteAnswer && clickAddFavAnswer" class="textToInitSession answerFavorite alert-danger center-block sucessMessageLogin titlesOnCenter">
+					Erro a adicionar resposta aos favoritos.
+				</div>
+				<div ng-if="removedFavoriteAnswer && clickRemoveFavAnswer" class="textToInitSession removeAnswerFavorite alert-success center-block sucessMessageLogin titlesOnCenter">
+					Removeu resposta dos seus favoritos.
+				</div>
+				<div ng-if="!removedFavoriteAnswer && clickRemoveFavAnswer" class="textToInitSession removeAnswerFavorite alert-danger center-block sucessMessageLogin titlesOnCenter">
+					Erro a remover resposta dos favoritos.
+				</div>
+				<div ng-if="addedLikeQuestion && clickAddLikeQuestion" class="textToInitSession addLikeQuestion alert-success center-block sucessMessageLogin titlesOnCenter">
+					Adicionou like na pergunta.
+				</div>
+				<div ng-if="!addedLikeQuestion && clickAddLikeQuestion" class="textToInitSession addLikeQuestion alert-danger center-block sucessMessageLogin titlesOnCenter">
+					Erro a adicionar like na pergunta.
+				</div>
+				<div ng-if="removedLikeQuestion && clickRemoveLikeQuestion" class="textToInitSession removeLikeQuestion alert-success center-block sucessMessageLogin titlesOnCenter">
+					Removeu like da resposta.
+				</div>
+				<div ng-if="!removedLikeQuestion && clickRemoveLikeQuestion" class="textToInitSession removeLikeQuestion alert-danger center-block sucessMessageLogin titlesOnCenter">
+					Erro a remover like na resposta.
+				</div>
+				<div ng-if="addedLikeAnswer && clickAddLikeAnswer" class="textToInitSession addLikeAnswer alert-success center-block sucessMessageLogin titlesOnCenter">
+					Adicionou like na resposta.
+				</div>
+				<div ng-if="!addedLikeAnswer && clickAddLikeAnswer" class="textToInitSession addLikeAnswer alert-danger center-block sucessMessageLogin titlesOnCenter">
+					Erro a adicionar like na resposta.
+				</div>
+				<div ng-if="removedLikeAnswer && clickRemoveLikeAnswer" class="textToInitSession removeLikeAnswer alert-success center-block sucessMessageLogin titlesOnCenter">
+					Removeu like da resposta.
+				</div>
+				<div ng-if="!removedLikeAnswer && clickRemoveLikeAnswer" class="textToInitSession removeLikeAnswer alert-danger center-block sucessMessageLogin titlesOnCenter">
+					Erro a remover like na resposta.
+				</div>
+			<nav class="padding-left-3x divUserDetailsMobile">
+				<div class="navDetailsUserMobile" ng-if="userDetails"><br>
+				
+					<!-- content if not init session -->
+					<div ng-if="!confirmSession">
+						<img class="imageUserNavDetailsMobile" src="../images/userDetails.PNG" ng-click="clickUserDetails()"><br><br>
+						<span title="Tem de iniciar sessão">
+							<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Favoritos</a><br>
+						</span>
+						<div class="lineWhite margin-bottom margin-top"></div>
+						<span title="Tem de iniciar sessão">
+							<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">As minhas perguntas</a><br>
+						</span>
+						<div class="lineWhite margin-bottom margin-top"></div>
+						<span title="Tem de iniciar sessão">
+							<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Partilhar com o Mundo</a><br>
+						</span>
+						<div class="lineWhite margin-bottom margin-top"></div>
+						<span title="Tem de iniciar sessão">
+							<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Notificações</a><br>
+						</span>
+						<div class="lineWhite margin-bottom margin-top"></div>
+						<span title="Tem de iniciar sessão">
+							<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Perfil</a><br>
+						</span>
+						<div class="lineWhite margin-bottom margin-top"></div>
+						<span title="Tem de iniciar sessão">
+							<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Comparar</a><br>
+						</span>
+						<div class="lineWhite margin-bottom margin-top"></div>
+						<a href="" ng-click="showInitSessionDiv()">Iniciar sessão</a><br>
+						<img src="../images/expandInitSession.PNG" ng-click="clickUserDetails()"><br><br>
+						
+						<!-- section of init session -->
+						<div class="divInitSessionMobile marginDivInitSession" ng-if="showInitSession">
+							<div class="alignCenter">
+								<h2 class="initSessionColor">Iniciar Sessão</h2>
+								
+								<div class="lineWhiteInitSession"></div><br>
+								<div ng-if="users === 'loadUser'">
+									<div class="loading-icon"></div>
+								</div>
+								<div ng-if="users !== 'loadUser'">
+									<input class="inputUserName" ng-model="usernameModel" type="text" placeholder="Username"/>
+									<input class="inputPassword" ng-model="passwordModel" type="password" placeholder="Password"/><br>
+									<a class="confirmSessionLabel confirmButtonMobile" ng-click="confirmSessionAction(usernameModel,passwordModel)">Confirmar</a><br><br>
+									<!-- login with firebase providers -->
+									<div>
+										<img class="cursorPointer" src="../images/logo_google.png" ng-click="loginWithGoogle()" width="10%" height="10%"/>
+										<img class="cursorPointer" src="../images/logo_face.png" ng-click="loginWithFacebook()" width="10%" height="10%"/>
+									</div>
+									<br>
+									<button class="registSessionMobile" type="button" ng-click="regist()">Registar</button>
+								</div>												
+							</div>
+						</div>
+					</div>
+					<!-- content if init session -->
+					<div ng-if="confirmSession">
+						<img src="../images/userDetails.PNG" ng-click="clickUserDetails()"><br><br>
+						<a ng-click="getRequest('favorites')">Favoritos</a><br>
+						<div class="lineWhiteMobile margin-bottom margin-top"></div>
+						<a ng-click="getRequest('questions')">As minhas perguntas</a><br>
+						<div class="lineWhiteMobile margin-bottom margin-top"></div>
+						<a ng-click="getRequest('world_share')">Partilhar com o Mundo</a><br>
+						<div class="lineWhiteMobile margin-bottom margin-top"></div>
+						<a class="notificationPosition" ng-click="getRequest('notification')">Notificações</a>
+						<label ng-if="notificationNumber" class="labelNumberNotification">[{numberOfNotifications}]</label>
+						<div ng-if="notificationNumber" class="circleNotification"></div>
+						<br>
+						<div class="lineWhiteMobile margin-bottom margin-top"></div>
+						<a ng-click="getRequest('perfil')">Perfil</a><br>
+						<div class="lineWhiteMobile margin-bottom margin-top"></div>
+						<a ng-click="getRequest('compare')">Comparar</a><br>
+						<div class="lineWhiteMobile margin-bottom margin-top"></div>
+						<a ng-click="logout()">Terminar Sessão</a><br>
+						<img src="../images/expandInitSession.PNG" ng-click="clickUserDetails()"><br><br>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<!-- show number of questions -->
+		<div ng-if="!loading && !showQuestionDetails && showAllQuestions" class="titlesOnCenter" ng-repeat="question in questions track by $index">
+			<a class="questionX questionLabel" ng-click="getQuestion(question.id_question, $index)">Pergunta [{$index+1}]</a><br>
+			<div class="center-block separateQuestions"></div>
+		</div>
+		<!-- if click on question, show details of question -->
+		<div class="divQuestionDetails" ng-if="showQuestionDetails">
+			<div class="titlesOnCenter"> 
+				<h1 class="subtitles">Pergunta [{indexQuestion}]</h1>
+			</div>
+			<div class="titlesOnCenter divAnswerQuestionMobile">
+				<div class="center-block" ng-if="!showDivAnswer">
+					<!-- Question -->
+					<img class="imageButtonMobile imageQuestionForumMobile" src="../images/user.png">
+					
+					<div class="borderQuestionMobile">
+						<label class="margin-right-8x questionForumLabelMobile">Pergunta [{indexQuestion}]</label>
+						<div class="marginOfDetailsQuestionMobile" ng-if="!questionFavorite.favorite" ng-click="addToFavoritesQuestion()">
+							<i class="far fa-star favoriteButtonMobile cursorPointer iconsOnQuestionsForumMobile"></i>
+						</div>
+						<div class="marginOfDetailsQuestionMobile" ng-if="questionFavorite.favorite" ng-click="removeFromFavoritesQuestion(indexQuestion)">
+							<i class="fas fa-star favoriteButtonMobile cursorPointer iconsOnQuestionsForumMobile" ></i>
+						</div>
+						<div ng-if="questionFavorite.like==0" ng-click="addLikeQuestion()">
+							<i class="fas fa-thumbs-up likeButtonMobile cursorPointer iconsOnQuestionsForumMobile" ></i>
+						</div>
+						<div ng-if="questionFavorite.like>0" ng-click="removeLikeQuestion()">
+							<i class="far fa-thumbs-up likeButtonMobile cursorPointer iconsOnQuestionsForumMobile" ></i>
+						</div>
+						<h5 class="descriptionQuestion descriptAnswerMobile">[{descriptionQuestion}]</h5>
+					</div>
+					<!-- Answers -->
+					<div ng-repeat="answerQuestion in descriptionAnswer track by $index" ng-if="descriptionAnswer.length>0">
+						<img ng-if="$index%2!==0" class="imageButtonMobile imageQuestionForumMobile" src="../images/user.png">
+						<!-- answer align to left -->
+						<div ng-if="$index%2!==0" class="borderQuestionMobile">
+							<label class="margin-right-8x questionForumLabelMobile">Resposta [{answerQuestion.numberOfQuestion}]</label>
+							<div class="marginOfDetailsQuestionMobile" ng-if="answerQuestion.favorite" ng-click="removeFromFavoritesAnswer(answerQuestion)">
+								<i class="fas fa-star favoriteButtonMobile cursorPointer iconsOnQuestionsForumMobile" ></i>
+							</div>
+							<div class="marginOfDetailsQuestionMobile" ng-if="!answerQuestion.favorite" ng-click="addToFavoritesAnswer(answerQuestion)">
+								<i class="far fa-star favoriteButtonMobile cursorPointer iconsOnQuestionsForumMobile" ></i>
+							</div>
+							<div ng-if="answerQuestion.likes==0" ng-click="addLikeAnswer(answerQuestion)">
+								<i class="fas fa-thumbs-up likeButtonMobile cursorPointer iconsOnQuestionsForumMobile" ></i>
+							</div>
+							<div ng-if="answerQuestion.likes>0" ng-click="removeLikeAnswer(answerQuestion)">
+								<i class="far fa-thumbs-up likeButtonMobile cursorPointer iconsOnQuestionsForumMobile" ></i>
+							</div>
+							<h5 class="descriptionQuestion descriptAnswerMobile">[{answerQuestion.text}]</h5>
+						</div>
+						<!-- answer align to right -->
+						<div ng-if="$index%2===0" class="borderAnswerMobile">
+							<div ng-if="favoriteAnswer" ng-click="removeFromFavoritesQuestion()">
+								<i class="fas fa-star favoriteButtonLeft cursorPointer iconsOnQuestionsForumMobile" ></i>
+							</div>
+							<div ng-if="!favoriteAnswer" ng-click="addToFavoritesQuestion()">
+								<i class="far fa-star favoriteButtonLeft cursorPointer iconsOnQuestionsForumMobile" ></i>
+							</div>
+							<div ng-if="answerQuestion.likes!==0" ng-click="addLikeQuestion()">
+								<i class="fas fa-thumbs-up likeButtonLeft cursorPointer iconsOnQuestionsForumMobile" ></i>
+							</div>
+							<div ng-if="answerQuestion.likes===0" ng-click="removeLikeQuestion()">
+								<i class="far fa-thumbs-up likeButtonLeft cursorPointer iconsOnQuestionsForumMobile" ></i>
+							</div>
+							<label class="margin-left-9x1 questionForumLabelMobile">Resposta [{answerQuestion.numberOfQuestion}]</label>
+							<img class="imageButtonLeft imageUserQuestions" src="../images/user.png">
+							<h5 class="descriptionQuestion descriptAnswerMobile">[{answerQuestion.text}]</h5>
+						</div>
+					</div>
+				</div>
+				<!-- button to response of questions -->
+				<div>
+					<button ng-if="!showDivAnswer" class="buttonAnswerMobile buttonAnswerForumMobile" ng-click="clickOnAnswer()">Responder</button>
+					<div ng-if="showDivAnswer" class="titlesOnCenter divAnswerMobile">
+						<textarea class="textAreaAnswerDiv fontSizeTextArea" ng-model="textAnswer" placeholder="..." ></textarea><br>
+						<button class="buttonAnswerMobile" ng-click="putAnswer(textAnswer)">Responder</button>
+					</div>
+				</div>
+				<!-- add question to favorites -->
+				<div class="margin-top-3x" ng-if="clickAddFavorite || clickRemoveFavorite">
+					<h4>Para poder adicionar ou remover dos seus favoritos, tem de iniciar sessão</h4>
+				</div>
+				<!-- put likes on question -->
+				<div ng-if="clickAddLike || clickRemoveLike">
+					<h4>Para poder adicionar ou remover gosto, tem de iniciar sessão</h4>
+				</div>
+			</div>
+		</div>
+		<!-- small search results -->
+		<i ng-if="miniSearchResults" ng-click="closeMiniSearch()" class="margin-top-4x fas fa-times cursorPointer float-right iconMedium"></i>
+		<div ng-if="miniSearchResults" class="margin-top-5x">
+			<div class="col-md-4" ng-repeat="material in resultSearch track by $index">
+				<div class="thumbnail">
+					<img class="margin-bottom-2x cursorPointer margin-left-2x cursorPointer" ng-click="openMaterial(material)" ng-src="../images/categories/miniSearch/[{material.name}]" width="35%" height="150px" alt="foto"/>
+				</div>
+			</div>
+		</div>
+		<!-- if click on result image -->
+		<div ng-if="showDetailsOfMaterial" class="col-sm-4 col-sm-offset-2" >
+			<div class="row container">
+				<i ng-click="closeMaterial()" class="fas fa-times cursorPointer float-right iconMedium"></i>
+				<div class=" col-md-5 order-md-1 marginMaterialList" ng-if="!showCategoryMaterial && !showProjectMaterial">
+					<img class="center-block borderZoomMaterial" ng-src="../images/categories/[{openedMaterial.category}]/[{openedMaterial.name}]" width="55%" height="260px" alt="foto"/>
+				</div>
+				<div class=" col-md-5 order-md-1 marginMaterialList" ng-if="showCategoryMaterial && !showProjectMaterial" >
+					<img class="center-block margin-top-6x borderZoomMaterial" ng-src="../images/categories/library/[{openedMaterial}]" width="55%" height="260px" alt="foto"/>
+				</div>
+				<div class=" col-md-5 order-md-1 marginMaterialList" ng-if="showProjectMaterial" >
+					<img class="center-block margin-top-6x borderZoomMaterial" ng-src="../images/categories/projectMaterials/[{openedMaterial}]" width="55%" height="260px" alt="foto"/>
+				</div>
+				<div class="col-md-2 order-md-1 mb-2 detailsMaterialSearch">
+					<h4 class="margin-right-5x margin-top-6x categoryMaterialSize">Categoria</h4>
+					<h5 class="margin-right-5x detailsOfMaterial">[{openedMaterial.category}]</h5>
+					<h4 class="margin-right-5x" >Code</h4>
+					<h5 class="margin-right-5x detailsOfMaterial">[{openedMaterial.code}]</h5>
+					<h4 class="margin-right-5x" >Description</h4>
+					<h5 class="margin-right-5x detailsOfMaterial">[{openedMaterial.description}]</h5>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+
+
+

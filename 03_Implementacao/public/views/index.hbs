@@ -1,0 +1,533 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>BiAMa</title>
+
+		<link rel='stylesheet' href='/stylesheets/styleBiama.css' />
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+		<!-- font awesome styles -->
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		
+		<!-- jQuery files -->
+		<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		
+		<!-- -->
+		<script>$.ajaxPrefilter(function( options, originalOptions, jqXHR ) { options.async = true; });</script>
+
+		<!-- angular files -->
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+		<script type="text/javascript" src="https://code.angularjs.org/1.6.9/angular-route.js"></script>
+
+		<!-- bootstrap styles -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	
+		<!-- languages file -->
+		<script type="application/json" src="jsonLabels/en.json"></script>
+ 	
+		<!-- Firebase -->
+		<script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
+		<!-- AngularFire -->
+		<script src="https://cdn.firebase.com/libs/angularfire/2.2.0/angularfire.min.js"></script>
+
+
+		<!--footer controllers-->
+		<script type="text/javascript" src="../controllers/main-controller.js"></script>
+		<script type="text/javascript" src="../controllers/biama-controller.js"></script>
+		<script type="text/javascript" src="../controllers/whereWeAre-controller.js"></script>
+		<script type="text/javascript" src="../controllers/forum-controller.js"></script>
+		<script type="text/javascript" src="../controllers/curiosityForum-controller.js"></script>
+        <script type="text/javascript" src="../controllers/questionsUsersForum-controller.js"></script>
+        <script type="text/javascript" src="../controllers/worldShareForum-controller.js"></script>
+		<script type="text/javascript" src="../controllers/library-controller.js"></script>
+		<script type="text/javascript" src="../controllers/myBiama-controller.js"></script>
+		<script type="text/javascript" src="../controllers/qrCode-controller.js"></script>
+		<script type="text/javascript" src="../controllers/registUser-controller.js"></script>
+
+		<!--details user controllers-->
+		<script type="text/javascript" src="../controllers/perfil-controller.js"></script>
+		<script type="text/javascript" src="../controllers/favorites-controller.js"></script>
+		<script type="text/javascript" src="../controllers/notifications-controller.js"></script>
+		<script type="text/javascript" src="../controllers/questions-controller.js"></script>
+		<script type="text/javascript" src="../controllers/worldShares-controller.js"></script>
+		<script type="text/javascript" src="../controllers/compare-controller.js"></script>
+
+		<base href="/"/>
+	</head>
+
+	<body class="paddingBody" ng-app="myApp" ng-controller="MainController">
+		<!-- MOBILE VIEW -->
+		<div class="paddingBottomMobile" ng-if="isMobileView">
+			<div ng-if="confirmSession && clickInitSession" class="alert alert-success center-block sucessMessageLogin titlesOnCenter">
+				Login efetuado com sucesso.
+			</div>
+			<div ng-if="errorLogin" class="alert alert-danger center-block sucessMessageLogin titlesOnCenter">
+				Erro a efetuar o login. Tente novamente.
+			</div>
+			<div ng-if="!needInitSession && clickOnNeedInitSession" class="needInitSession alert-danger center-block sucessMessageLogin titlesOnCenter">
+				Tem de iniciar sessão.
+			</div>
+			<!-- header -->
+			<div ng-if="search" class="container-fluid">
+				<div class="header">
+					<div class="col-sm-4">
+						<div ng-if="!showSearch" class="margin-top-2x col-sm-1">
+							<img class="float-right margin-top-1x cursorPointer" ng-if="!showSearch && !userDetails" ng-click="clickTopSearch()" src="../images/search.png">
+							<img class="float-right cursorPointer" ng-if="showSearch  && !userDetails" width="45" ng-click="clickTopSearch()" src="../images/search.png">
+						</div>
+						<img class="cursorPointer" ng-if="!userDetails && !enableUserIcon && isMobileView" src="../images/user.png" alt="img" ng-click="clickUserDetails()">
+						<img class="cursorPointer" ng-if="!userDetails && !isMobileView" src="../images/user.png" alt="img" ng-click="clickUserDetails()">
+					</div>
+					<div ng-if="showSearch" class="margin-top col-sm-2">
+
+						<img class="cursorPointer" ng-if="!userDetails" src="../images/user.png" ng-click="clickUserDetails()" width="50px">
+						<img class="cursorPointer" ng-if="!showSearch && !userDetails" ng-click="clickTopSearch()" src="../images/search.png" width="45px">
+						<img class="cursorPointer" ng-if="showSearch  && !userDetails" ng-click="clickTopSearch()" src="../images/search.png" width="45px">
+						<input id="miniSearch" class="inputMinSearch widthOfSearchInputMobile" ng-if="showSearch && !userDetails" type="text"></input>
+						<button ng-if="showSearch && !userDetails" ng-click="initMiniSearch()" class="buttonOkMiniSearch glyphicon glyphicon-ok cursorPointer"></button>
+						<h5 class="titlesOnCenter colorOfErrorMessages" ng-if="noResultsOnSearch">Não existem resultados.</h5>
+					</div>
+				</div>
+			</div> 
+			<!-- image biama with search -->
+			<div ng-if="showInitSearch && !showMaterials && !openMaterialDetail && !registUser" class="row text-center">
+				<img class="margin-top-3x" src="../images/topoBiama.png"/>
+			</div>
+			<!-- show categories and materials -->
+			<div ng-if="search" class="container marginBottomMobileSearch">
+				<div ng-if="!openMaterialDetail && !loading && search && showInitSearch" class="col-sm-4 col-sm-offset-4">
+					<div ng-if="!loading" class="ui-widget input-group stylish-input-group searchInputStyle marginBottomSearch">
+						<select class="form-control" id="tags_search"  ng-click="tagsOfSearch()" style="height: 27px;width: 247px;border: 0px;border-radius: 9px;position:initial">
+							<option ng-repeat="item in itemSearch">[{item}]</option>
+						</select>
+						<span class="input-group-addon searchIcon" style="background-color: transparent; border: 0px;">
+							<span class="glyphicon glyphicon-search cursorPointer" ng-click="selectedMaterialSearch()"></span>
+						</span>
+					</div>
+				</div>
+				<div ng-if="loading">
+					<div class="loading-icon-footer-info"></div>
+				</div>
+				<div ng-if="showMaterials && !showDetailsOfMaterial" class="margin-top-2x">
+					<i ng-click="closeMaterial()" class="fas fa-times cursorPointer float-right iconMedium iconCloseOnSearchMobile"></i>
+					<div class="padding sectionScrollSearchIndexMobile">
+						<div class="col-md-4" ng-repeat="material in materials track by $index">
+							<div class="thumbnail" ng-if="!showCategoryMaterial && !showProjectMaterial">
+								<img class="margin-bottom-2x cursorPointer margin-left-2x cursorPointer" ng-click="openMaterial(material)" ng-src="../images/categories/[{material.category}]/[{material.name}]" width="35%" height="150px" alt="foto"/>
+							</div>
+							<div class="thumbnail" ng-if="showCategoryMaterial && !showProjectMaterial">
+								<img class="margin-bottom-2x cursorPointer margin-left-2x cursorPointer" ng-click="openMaterial(material)" ng-src="../images/categories/library/[{material.name}]" width="35%" height="150px" alt="foto"/>
+							</div>
+							<div class="thumbnail" ng-if="showProjectMaterial && !showCategoryMaterial">
+								<img class="margin-bottom-2x cursorPointer margin-left-2x cursorPointer" ng-click="openMaterial(material)" ng-src="../images/categories/projectMaterials/[{material.name}]" width="35%" height="150px" alt="foto"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div ng-if="showDetailsOfMaterial" class="col-sm-4 col-sm-offset-2">
+					<div class="row container">
+						<i ng-click="closeMaterial()" class="fas fa-times cursorPointer float-right iconMedium "></i>
+						<div class="col-md-5 order-md-1 margin-top-4x1" ng-if="!showCategoryMaterial && !showProjectMaterial">
+							<img class="center-block borderZoomMaterial" ng-src="../images/categories/[{openedMaterial.category}]/[{openedMaterial.name}]" width="80%" height="200px" alt="foto"/>
+						</div>
+						<div class="col-md-5 order-md-1 margin-top-4x1" ng-if="showCategoryMaterial && !showProjectMaterial">
+							<img class="center-block margin-top-6x borderZoomMaterial" ng-src="../images/categories/library/[{openedMaterial.name}]" width="80%" height="200px" alt="foto"/>
+						</div>
+						<div class="col-md-5 order-md-1 margin-top-4x1" ng-if="showProjectMaterial">
+							<img class="center-block margin-top-6x borderZoomMaterial" ng-src="../images/categories/projectMaterials/[{openedMaterial.name}]" width="80%" height="200px" alt="foto"/>
+						</div>
+						<div class="col-md-2 order-md-1 mb-2 detailsMaterialSearch marginOfDetailsMaterialMobile">
+							<h4 class="margin-right-5x margin-top-5x textBold">Categoria</h4>
+							<h5 class="margin-right-5x">[{openedMaterial.category}]</h5>
+							<h4 class="margin-right-5x textBold">Código</h4>
+							<h5 class="margin-right-5x">[{openedMaterial.code}]</h5>
+							<h4 class="margin-right-5x textBold">Descrição</h4>
+							<h5 class="margin-right-5x sectionScrollDescMaterial widthOfDescMaterialMobile margin-bottom-3x">[{openedMaterial.description}]</h5>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- user details icon -->
+			<div ng-if="isMobileView" class="row">
+				<nav class="padding-left-3x divUserDetailsMobile">
+					<div class="navDetailsUser" ng-if="userDetails"><br>
+						<!-- content if not init session -->
+						<div ng-if="!confirmSession">
+							<img src="../images/userDetails.PNG" ng-click="clickUserDetails()"><br><br>
+							<span title="Tem de iniciar sessão">
+								<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Favoritos</a><br>
+							</span>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<span title="Tem de iniciar sessão">
+								<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">As minhas perguntas</a><br>
+							</span>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<span title="Tem de iniciar sessão">
+								<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Partilhar com o Mundo</a><br>
+							</span>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<span title="Tem de iniciar sessão">
+								<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Notificações</a><br>
+							</span>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<span title="Tem de iniciar sessão">
+								<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Perfil</a><br>
+							</span>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<span title="Tem de iniciar sessão">
+								<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Comparar</a><br>
+							</span>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<a href="" ng-click="showInitSessionDiv()">Iniciar sessão</a><br>
+							<img src="../images/expandInitSession.PNG" ng-click="clickUserDetails()"><br><br>
+							
+							<!-- section of init session -->
+							<div class="divInitSession sectionInitSession" ng-if="showInitSession">
+								<div class="alignCenter">
+									<h5 class="initSessionColor">Iniciar Sessão</h5>
+									
+									<div class="lineWhiteInitSession"></div><br>
+									<div ng-if="users === 'loadUser'">
+										<div class="loading-icon"></div>
+									</div>
+									<div ng-if="users !== 'loadUser'">
+										<input class="inputUserName" ng-model="usernameModel" type="text" placeholder="Username"/>
+										<input class="inputPassword" ng-model="passwordModel" type="password" placeholder="Password"/><br>
+										<a class="confirmSessionLabel confirmButton" ng-click="confirmSessionAction(usernameModel,passwordModel)">Confirmar</a><br><br>
+										<!-- login with firebase providers -->
+										<div>
+											<img class="cursorPointer" src="../images/logo_google.png" ng-click="loginWithGoogle()" width="10%" height="10%"/>
+											<img class="cursorPointer" src="../images/logo_face.png" ng-click="loginWithFacebook()" width="10%" height="10%"/>
+										</div>
+										<br>
+										<a class="registSession" ng-click="disableSearch('regist')">Registar</a>
+										<!--<button class="registSession" type="button" ng-click="regist()">Registar</button>-->
+										<h2 ng-if="facebookInDeveloping">Login do Facebook em desenvolvimento.</h2>
+									</div>
+									<h3 class="titlesOnCenter colorOfErrorMessages" ng-if="incorrectCredentials">Credenciais inválidas.</h3>												
+								</div>
+							</div>
+						</div>
+						<!-- content if init session -->
+						<div ng-if="confirmSession">
+							<img src="../images/userDetails.PNG" ng-click="clickUserDetails()"><br><br>
+							<a ng-click="disableSearch('favorites')">Favoritos</a><br>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<a ng-click="disableSearch('questions')">As minhas perguntas</a><br>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<a ng-click="disableSearch('world_share')">Partilhar com o Mundo</a><br>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<a class="notificationPosition" ng-click="disableSearch('notification')">Notificações</a>
+							<label ng-if="notificationNumber" class="labelNumberNotification">[{numberOfNotifications}]</label>
+							<div ng-if="notificationNumber" class="circleNotification"></div>
+							<br>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<a ng-click="disableSearch('perfil')">Perfil</a><br>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<a ng-click="disableSearch('compare')">Comparar</a><br>
+							<div class="lineWhite margin-bottom margin-top"></div>
+							<a ng-click="logout()">Terminar Sessão</a><br>
+							<img src="../images/expandInitSession.PNG" ng-click="clickUserDetails()"><br><br>
+						</div>
+					</div>
+				</nav>
+			</div>
+			<div class="perfilDetails center-block" ng-if="openImageUploadLabel">
+				<input type="file" id="uploadPicture" class="buttonEditPerfilPhoto cursorPointer" value="Escolha uma foto">
+				<button ng-click="saveUploadFile()">Guardar</button>
+			</div>
+			<!-- zoom in material -->
+			<div ng-if="zoomInMaterial">
+				<div>
+					<i ng-click="closeMaterial()" class="fas fa-times float-right cursorPointer iconMedium closeOpenMaterial"></i>
+					<img class="margin-bottom-2x margin-left-2x borderZoomMaterial" ng-src="../images/categories/[{materialInfo.category}]/[{materialInfo.image}]" width="47%" height="460px" alt="foto"/><br>
+				</div>
+			</div>
+			<!-- show location of material -->
+			<div ng-if="locationMaterial">
+				<div ng-if="loading">
+					<div class="loading-icon-footer-info"></div>
+				</div>	
+				<div ng-if="!loading" class="titlesOnCenter">
+
+					<iframe class="noBorderIframe" ng-if="!zoomInIFrame" ng-src="[{locationsURL}]" height="90%" width="100%" frameborder="0" allowfullscreen></iframe>
+					<iframe class="noBorderIframe" ng-if="zoomInIFrame" ng-src="[{locationsURL}]" height="90%" width="100%" frameborder="0" allowfullscreen></iframe>
+					
+					<div class="dropup ">
+						<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" ng-click="getSchools()">Pesquise um local ou endereço
+						<span class="caret"></span></button>
+						<ul class="dropdown-menu">
+							<div ng-if="!loadingSchool" ng-repeat="biama in schools">
+								<li>
+								<a class="languagesDiv margin-right-4x" ng-click="selectSchool(biama.locationDescription)">[{biama.locationDescription}]</a>
+								</li>
+							</div>
+						</ul>
+							<ul class="dropdown-menu">
+							<div class="loadSchool" ng-if="loadingSchool">
+								<li class="loading-icon-footer-info"></li>
+							</div>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- DESKTOP VIEW -->
+		<div class="divController" id="divControllerMain">
+			<header ng-if="!isMobileView && namePage=='index'" id="headerMain" class="masthead text-white text-center">
+				<nav>
+					<div class="headerDesktop">
+						<i class="float-left fas fa-circle redCircle margin-right margin-left"></i>
+						<i class="float-left fas fa-circle orangeCircle margin-right"></i>
+						<i class="float-left fas fa-circle greenCircle margin-right-3x"></i>
+
+						<!--<i class="cursorPointer float-left glyphicon glyphicon-triangle-left arrows backArrow" ng-click="goToHomePage()"></i>						
+						<i class="float-left fa fa-chevron-right arrows margin-right-5x"></i>-->
+						<input class="inputLink center-block" type="input" placeholder="https://www.biama.pt" style="margin-right: 365px;" disabled></input>
+					</div>
+				</nav>	
+			</header>
+			<article ng-if="!isMobileView" class="paddingDesktop">
+				<div class="backgroundColorDesktop" style="background-color: white;">
+					<!-- user & search & languages-->
+					<nav class="positionOfNavDetails" id="searchMain">
+						<!-- search -->
+						<div ng-if="!isMobileView"  class="float-left padding-left-3x">
+							<img class="cursorPointer" ng-if="!userDetails" src="../images/user.png" ng-click="clickUserDetails()" width="50px">
+							<img class="cursorPointer" ng-if="!showSearch && !userDetails" ng-click="clickTopSearch()" src="../images/search.png" width="45px">
+							<img class="cursorPointer" ng-if="showSearch  && !userDetails" ng-click="clickTopSearch()" src="../images/search.png" width="45px">
+							<input id="miniSearch" class="inputMinSearch" ng-if="showSearch && !userDetails" type="text"></input>
+							<button ng-if="showSearch && !userDetails" ng-click="initMiniSearch()" class="buttonOkMiniSearch glyphicon glyphicon-ok cursorPointer"></button>
+							<h5 class="colorOfErrorMessages" ng-if="noResultsOnSearch">Não existem resultados.</h5>
+						</div>
+
+						<!-- section of user details -->
+						<div ng-if="!isMobileView" id="userDetailsMain" class="row">
+							<nav class="padding-left-3x">
+								<div class="navDetailsUser" ng-if="userDetails"><br>
+									<!-- content if not init session -->
+									<div ng-if="!confirmSession">
+										<img class="cursorPointer" src="../images/userDetails.PNG" ng-click="clickUserDetails()"><br><br>
+										<span title="Tem de iniciar sessão">
+											<a href="" class="aDisabled" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Favoritos</a><br>
+										</span>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<span title="Tem de iniciar sessão">
+											<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">As minhas perguntas</a><br>
+										</span>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<span title="Tem de iniciar sessão">
+											<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Partilhar com o Mundo</a><br>
+										</span>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<span title="Tem de iniciar sessão">
+											<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Notificações</a><br>
+										</span>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<span title="Tem de iniciar sessão">
+											<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Perfil</a><br>
+										</span>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<span title="Tem de iniciar sessão">
+											<a href="" ng-click="selectOption()" style=" cursor:not-allowed;opacity:0.5;text-decoration: none;">Comparar</a><br>
+										</span>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<a href="" ng-click="showInitSessionDiv()">Iniciar sessão</a><br>
+										<img src="../images/expandInitSession.PNG" ng-click="clickUserDetails()"><br><br>
+										
+										<!-- section of init session -->
+										<div class="divInitSession" ng-if="showInitSession">
+											<div class="alignCenter">
+												<h5 class="initSessionColor">Iniciar Sessão</h5>
+												
+												<div class="lineWhiteInitSession"></div><br>
+												<div ng-if="users === 'loadUser'">
+													<div class="loading-icon"></div>
+												</div>
+												<div ng-if="users !== 'loadUser'">
+													<input class="inputUserName" ng-model="usernameModel" type="text" placeholder="Username"/>
+													<input class="inputPassword" ng-model="passwordModel" type="password" placeholder="Password"/><br>
+													<a class="confirmSessionLabel confirmButton" ng-click="confirmSessionAction(usernameModel,passwordModel)">Confirmar</a><br><br>
+													<!-- login with firebase providers -->
+													<div>
+														<img class="cursorPointer" src="../images/logo_google.png" ng-click="loginWithGoogle()" width="10%" height="10%"/>
+														<img class="cursorPointer" src="../images/logo_face.png" ng-click="loginWithFacebook()" width="10%" height="10%"/>
+													</div>
+													<br>
+													<a href="" class="registSession" ng-click="disableSearch('regist')">Registar</a>
+													<!--<button class="registSession" type="button" ng-click="regist()">Registar</button>-->
+												</div>	
+												<h5 class="titlesOnCenter colorOfErrorMessages" ng-if="incorrectCredentials">Credenciais inválidas.</h5>			
+											</div>
+										</div>
+									</div>
+									<!-- content if init session -->
+									<div ng-if="confirmSession">
+										<img src="../images/userDetails.PNG" ng-click="clickUserDetails()"><br><br>
+										<a href="/BiAMa/favorites?id=[{idUserLoggerIn}]&redirect" ng-click="disableSearch('favorites')">Favoritos</a><br>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<a href="/BiAMa/myQuestions?id=[{idUserLoggerIn}]&redirect" ng-click="disableSearch('questions')">As minhas perguntas</a><br>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<a href="/BiAMa/worldShare?id=[{idUserLoggerIn}]&redirect" ng-click="disableSearch('world_share')">Partilhar com o Mundo</a><br>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<a class="notificationPosition" href="/BiAMa/notifications?id=[{idUserLoggerIn}]&redirect" ng-click="disableSearch('notification')">Notificações</a>
+										<label ng-if="notificationNumber" class="labelNumberNotification">[{numberOfNotifications}]</label>
+										<div ng-if="notificationNumber" class="circleNotification"></div>
+										<br>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<a href="/BiAMa/perfilPage?id=[{idUserLoggerIn}]&redirect" ng-click="disableSearch('perfil')">Perfil</a><br>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<a href="/BiAMa/compare?id=[{idUserLoggerIn}]&redirect" ng-click="disableSearch('compare')">Comparar</a><br>
+										<div class="lineWhite margin-bottom margin-top"></div>
+										<a ng-click="logout()">Terminar Sessão</a><br>
+										<img src="../images/expandInitSession.PNG" ng-click="clickUserDetails()"><br><br>
+									</div>
+								</div>
+							</nav>
+						</div>
+					</nav>
+					<div ng-if="confirmSession && clickInitSession" class="alert alert-success center-block sucessMessageLogin titlesOnCenter">
+						Login efetuado com sucesso.
+					</div>
+					<div ng-if="errorLogin" class="alert alert-danger center-block sucessMessageLogin titlesOnCenter">
+						Erro a efetuar o login. Tente novamente.
+					</div>
+					<div ng-if="!needInitSession && clickOnNeedInitSession" class="needInitSession alert-danger center-block sucessMessageLogin titlesOnCenter">
+						Tem de iniciar sessão para obter as suas informações.
+					</div>
+					<!--image biama -->
+					<div ng-if="search && !showMaterials && !openMaterialDetail && !isMobileView" class="row text-center">
+						<img ng-if="showInitSearch" class="margin-top-6x" src="../images/topoBiamaHome.png" width="352px"/>
+					</div>
+
+					<!-- image biama with results search -->
+					<div ng-if="showResultsOfMiniSearch && !isMobileView" class="row text-center">
+						<img class="margin-top-3x" src="../images/topoBiama.png"/>
+					</div>
+
+					<!-- image biama with search -->
+					<div ng-if="search && (showMaterials || registUser) && !isMobileView" class="row text-center">
+						<img class="margin-top-3x" src="../images/topoBiama.png"/>
+					</div>
+					
+					<!-- titles of page & search -->
+					<div class="row text-center">
+						<ng-view></ng-view>
+						<!-- section of big search-->
+						<div ng-if="!openMaterialDetail && search && showInitSearch && !isMobileView" class="col-sm-4 col-sm-offset-4 ">
+							<div ng-if="!loading" class="ui-widget input-group stylish-input-group searchInputStyle marginBottomSearch">
+								<select class="form-control" id="tags_search"  ng-click="tagsOfSearch()" style="height: 27px;width: 100%;border: 0px;border-radius: 9px;position:initial">
+									<option ng-repeat="item in itemSearch">[{item}]</option>
+								</select>
+								<span class="input-group-addon searchIcon" style="background-color: transparent; border: 0px;">
+									<span class="glyphicon glyphicon-search cursorPointer" ng-click="selectedMaterialSearch()"></span>
+								</span>
+							</div>
+						</div>
+
+						<div ng-if="loading && !isMobileView">
+							<div class="loading-icon-footer-info"></div>
+						</div>
+						<!-- show result of search -->
+						<div ng-if="search && showMaterials && !isMobileView && !showDetailsOfMaterial" class="margin-top-4x1">
+							<i ng-click="closeMaterial()" class="fas fa-times cursorPointer iconCloseMaterialSearch float-right iconMedium"></i>
+							<div class="padding sectionScrollSearch">
+								<div class="col-md-4" ng-repeat="material in materials track by $index">
+									<div class="thumbnail" ng-if="!showCategoryMaterial && !showProjectMaterial">
+										<img class="cursorPointer" ng-click="openMaterial(material)" ng-src="../images/categories/[{material.category}]/[{material.name}]" width="35%" height="150px" alt="foto"/>
+									</div>
+									<div class="thumbnail" ng-if="showCategoryMaterial && !showProjectMaterial">
+										<img class="cursorPointer" ng-click="openMaterial(material)" ng-src="../images/categories/library/[{material.name}]" width="35%" height="150px" alt="foto"/>
+									</div>
+									<div class="thumbnail" ng-if="showProjectMaterial && !showCategoryMaterial">
+										<img class="cursorPointer" ng-click="openMaterial(material)" ng-src="../images/categories/projectMaterials/[{material.name}]" width="35%" height="150px" alt="foto"/>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- show details of material if click on material -->
+						<div ng-if="showDetailsOfMaterial && !isMobileView" class="col-sm-4 col-sm-offset-2">
+							<i ng-click="closeMaterial()" class="fas fa-times cursorPointer marginIconCloseMaterialDetails float-right iconMedium"></i>
+							<div class="row container marginBottomMaterialDetails">
+								<div class="col-md-5 order-md-1" ng-if="!showCategoryMaterial && !showProjectMaterial">
+									<img class="margin-bottom-3x margin-top-5x borderZoomMaterial" ng-src="../images/categories/[{openedMaterial.category}]/[{openedMaterial.name}]" width="75%" height="250px" alt="foto"/>
+								</div>
+								<div class="col-md-5 order-md-1" ng-if="showCategoryMaterial && !showProjectMaterial">
+									<img class="margin-bottom-3x margin-top-5x borderZoomMaterial" ng-src="../images/categories/library/[{openedMaterial.name}]" width="75%" height="250px" alt="foto"/>
+								</div>
+								<div class="col-md-5 order-md-1" ng-if="showProjectMaterial">
+									<img class="margin-bottom-3x margin-top-5x borderZoomMaterial" ng-src="../images/categories/projectMaterials/[{openedMaterial.name}]" width="75%" height="250px" alt="foto"/>
+								</div>
+								<div class="col-md-2 order-md-1 mb-2 detailsMaterialSearch">
+									<h4 class="margin-right-5x margin-top-5x textBold">Categoria</h4>
+									<h5 class="margin-right-5x">[{openedMaterial.category}]</h5>
+									<h4 class="margin-right-5x textBold">Código</h4>
+									<h5 class="margin-right-5x">[{openedMaterial.code}]</h5>
+									<h4 class="margin-right-5x textBold">Descrição</h4>
+									<h5 class="margin-right-5x descMaterialDetailsWidth sectionScrollDescMaterial">[{openedMaterial.description}]</h5>
+								</div>
+							</div>
+						</div>
+						<!-- section of upload image on perfil details -->
+						<div class="perfilDetails center-block" ng-if="openImageUploadLabel">
+							<input type="file" id="uploadPicture" class="buttonEditPerfilPhoto cursorPointer" value="Escolha uma foto">
+							<button ng-click="saveUploadFile()">Guardar</button>
+						</div>
+					</div>
+				</div>	
+			</article>
+			<!-- small search results -->
+			<i ng-if="miniSearchResults && !isMobileView" ng-click="closeMiniSearch()" class="fas fa-times cursorPointer float-right iconMedium alignIconCloseOfMiniSearch"></i>
+			<i ng-if="miniSearchResults && isMobileView" ng-click="closeMiniSearch()" class="fas fa-times cursorPointer float-right iconMedium alignIconCloseOfMiniSearchMobile"></i>
+			<div ng-if="miniSearchResults && isMobileView" class="sectionScrollInitSearch float-right marginResultsMiniSearchMobile">
+				<div>
+					<div class="col-md-4" ng-repeat="material in resultSearch track by $index">
+						<div class="thumbnail">
+							<img class="margin-bottom-2x cursorPointer margin-left-2x cursorPointer" ng-click="openMaterial(material)" ng-src="../images/categories/miniSearch/[{material.name}]" width="35%" height="150px" alt="foto"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div ng-if="miniSearchResults && !isMobileView" class="sectionScrollInitSearch float-right marginResultsMiniSearch">
+				<div>
+					<div class="col-md-4" ng-repeat="material in resultSearch track by $index">
+						<div class="thumbnail">
+							<img class="margin-bottom-2x cursorPointer margin-left-2x cursorPointer" ng-click="openMaterial(material)" ng-src="../images/categories/miniSearch/[{material.name}]" width="35%" height="150px" alt="foto"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- footer of desktop view -->
+			<footer ng-if="!isMobileView" class="w3-bar w3-center footerDesktop" id="footerMain">
+				<a href="/BiAMa/biamaPage?id=[{idUserLoggerIn}]&redirect" ng-if="nameclick !== 'biamaPage'" ng-click="changeColorClick('biamaPage')" style="width:20%;color: #E4A73F; text-decoration:none; font-size: 21px;font-family: Arial Narrow, sans-serif;" class="buttonNotSelected buttonAlignment w3-mobile">BiAMa</a>
+				<a href="/BiAMa/biamaPage?id=[{idUserLoggerIn}]&redirect" ng-if="nameclick === 'biamaPage'" ng-click="changeColorClick('biamaPage')" style="width:20%;color: white; text-decoration:none; font-size: 21px;font-family: Arial Narrow, sans-serif;" class="buttonSelected buttonAlignment w3-mobile">BiAMa</a>
+
+				<a href="/BiAMa/whereWeAre?id=[{idUserLoggerIn}]&redirect" ng-if="nameclick !== 'whereWeAre'" ng-click="changeColorClick('whereWeAre')" style="width:20%;color: #E4A73F; text-decoration:none; font-size: 21px;font-family: Arial Narrow, sans-serif;" class="w3-bar-item buttonNotSelected w3-mobile">Onde Estamos</a>
+				<a href="/BiAMa/whereWeAre?id=[{idUserLoggerIn}]&redirect" ng-if="nameclick === 'whereWeAre'" ng-click="changeColorClick('whereWeAre')" style="width:20%;color: white; text-decoration:none; font-size: 21px;font-family: Arial Narrow, sans-serif;" class="w3-bar-item buttonSelected w3-mobile">Onde Estamos</a>
+
+				<a href="/BiAMa/library?id=[{idUserLoggerIn}]&redirect" ng-if="nameclick !== 'library'" ng-click="changeColorClick('library')" style="width:20%;color: #E4A73F; text-decoration:none; font-size: 21px;font-family: Arial Narrow, sans-serif;" class="w3-bar-item buttonNotSelected w3-mobile">Biblioteca</a>
+				<a href="/BiAMa/library?id=[{idUserLoggerIn}]&redirect" ng-if="nameclick === 'library'" ng-click="changeColorClick('library')" style="width:20%;color: white; text-decoration:none; font-size: 21px;font-family: Arial Narrow, sans-serif;" class="w3-bar-item buttonSelected w3-mobile">Biblioteca</a>
+
+				<a href="/BiAMa/myBiama?id=[{idUserLoggerIn}]&redirect" ng-if="nameclick !== 'myBiama'" ng-click="changeColorClick('myBiama')" style="width:20%;color: #E4A73F; text-decoration:none; font-size: 21px;font-family: Arial Narrow, sans-serif;" class="w3-bar-item buttonNotSelected w3-mobile">A sua BiAMa</a>
+				<a href="/BiAMa/myBiama?id=[{idUserLoggerIn}]&redirect" ng-if="nameclick === 'myBiama'" ng-click="changeColorClick('myBiama')" style="width:20%;color: white; text-decoration:none; font-size: 21px;font-family: Arial Narrow, sans-serif;" class="w3-bar-item buttonSelected w3-mobile">A sua BiAMa</a>
+
+				<a href="/BiAMa/forumPage?id=[{idUserLoggerIn}]&redirect" ng-if="nameclick !== 'forum'" ng-click="changeColorClick('forum')" style="width:20%; color:#E4A73F; text-decoration:none; font-size: 21px;font-family: Arial Narrow, sans-serif;" class="w3-bar-item buttonNotSelected w3-mobile">Fórum</a>
+				<a href="/BiAMa/forumPage?id=[{idUserLoggerIn}]&redirect" ng-if="nameclick === 'forum'" ng-click="changeColorClick('forum')" style="width:20%; color:white; text-decoration:none; font-size: 21px;font-family: Arial Narrow, sans-serif;" class="w3-bar-item buttonSelected w3-mobile">Fórum</a>
+			</footer>
+			<!-- footer of mobile view -->
+			<footer ng-if="isMobileView" id="footerMobile" class="footerOfMobile titlesOnCenter">
+				<img class="cursorPointer" ng-click="disableSearch('library')" src="../images/mobile/library.png" width="15%">
+				<img class="cursorPointer" ng-click="disableSearch('whereWeAre')" src="../images/mobile/location.png" width="15%">
+				<img class="cursorPointer" ng-click="disableSearch('qrCode')" src="../images/mobile/photo.png" width="18%">
+				<img class="cursorPointer" ng-click="disableSearch('biamaPage')" src="../images/mobile/biamaPage.png" width="15%">
+				<img class="cursorPointer" ng-click="disableSearch('forum')" src="../images/mobile/questions.png" width="15%">
+			</footer>
+		</div>
+	</body>
+</html>
